@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import convert from 'xml-js'
 import dateFormat from 'dateformat'
 
 import api from './Api'
@@ -8,19 +9,49 @@ class Home extends Component {
         super(props)
 
         this.state = {
-            isLoading: false
+            isLoading: false,
+            pontos: []
         }   
         this.menu = this.menu.bind(this)
         this.listPoint = this.listPoint.bind(this)
-    }   
+    }  
+    leftPad(value, totalWidth, paddingChar){
+        var length = totalWidth - value.toString().length + 1;
+        return Array(length).join(paddingChar || '0') + value;
+    } 
     getPonto(){
-        //api.loginUser(user).then((res) => {})
-        console.log('verificando...', this.refs.mat.value, dateFormat(this.refs.date.value, 'dd/mm/yyyy'))
-        
+        const ponto = {
+            'mat': this.refs.mat.value,
+            'dat': dateFormat(this.refs.date.value, 'dd/mm/yyyy')
+        }
+        api.getPonto(ponto).then((res) => {
+            const response = res.data         
+            const dataTime = JSON.parse(convert.xml2json(response.data, {compact: true, spaces: 2}))
+            if(dataTime.string._text){
+                const ponto = dataTime.string._text.split(';')
+                let batida = 1, HorasTrabalhadas, MinutosTrabalhados, horaIni, horaFin, segundosIni, segundosFin, horas, minutos, segundosTotal = 0
+                for(let i = 0; i < ponto.length-1; i=i+6) {   
+                    horaIni = ponto[i+1].split(':');
+                    horaFin = ponto[i+4].split(':');
+                    segundosIni = (parseInt(horaIni[0])*3600)+(parseInt(horaIni[1])*60)
+                    segundosFin = (parseInt(horaFin[0])*3600)+(parseInt(horaFin[1])*60)          
+                    horas = parseInt(((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) / 3600)
+                    minutos = parseInt((((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) % 3600) / 60)
+                    segundosTotal = segundosTotal + (horas*3600)+(minutos*60)  
+                    console.log('Batida: ', batida + '->' + this.leftPad(horas, 2) + ':' + this.leftPad(minutos, 2))
+                    batida++
+                } 
+                HorasTrabalhadas = parseInt(segundosTotal / 3600)
+                MinutosTrabalhados = parseInt((segundosTotal % 3600) / 60)
+                console.log('Horas Total: ', this.leftPad(HorasTrabalhadas, 2) + ":" + this.leftPad(MinutosTrabalhados, 2))
+            }else{
+                console.log('Sem registro para esta data: ', dateFormat(this.refs.date.value, 'dd/mm/yyyy'))
+            }
+        })
         this.setState({
             isLoading: true
         })
-      }
+    }
     menu(){
         return(
             <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
@@ -39,7 +70,7 @@ class Home extends Component {
                   <label>Matrícula:</label>
                   <input ref='mat' className="form-control mr-sm-2" type="search" placeholder="Matrícula" aria-label="Search"/>
                   <label>Data:</label>
-                  <input ref='date' className="form-control mr-sm-2" type="date" placeholder="Search" aria-label="Data" />
+                  <input ref='dat' className="form-control mr-sm-2" type="date" placeholder="Search" aria-label="Data" />
                   <button className="btn btn-outline-success my-2 my-sm-0" onClick={() => this.getPonto()}>Verificar</button>
                 </div>
               </div>
