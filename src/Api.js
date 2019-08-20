@@ -1,10 +1,10 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://iis2k8sob/PORTALRH/WebServices/Pessoais.asmx'
+    baseURL: 'http://10.2.24.144:8080'
 })
 
-const getPonto = (ponto) => api.get(`PesquisaPontoAtual?sCodigo=${ponto.mat}&sDataIni=${ponto.dat}&sDataFim=${ponto.dat}&sUnidade=SOB&bCompletaMarcacoes=TRUE`)
+const getPonto = (ponto) => api.post('points', ponto)
 
 const apis = {
     getPonto

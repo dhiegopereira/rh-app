@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import convert from 'xml-js'
 import dateFormat from 'dateformat'
+import axios from 'axios'
 
 import api from './Api'
 
@@ -21,36 +22,17 @@ class Home extends Component {
     } 
     getPonto(){
         const ponto = {
-            'mat': this.refs.mat.value,
-            'dat': dateFormat(this.refs.date.value, 'dd/mm/yyyy')
+            'matricula': '013915052',
+	        'data': '19/08/2019'
         }
         api.getPonto(ponto).then((res) => {
-            const response = res.data         
-            const dataTime = JSON.parse(convert.xml2json(response.data, {compact: true, spaces: 2}))
-            if(dataTime.string._text){
-                const ponto = dataTime.string._text.split(';')
-                let batida = 1, HorasTrabalhadas, MinutosTrabalhados, horaIni, horaFin, segundosIni, segundosFin, horas, minutos, segundosTotal = 0
-                for(let i = 0; i < ponto.length-1; i=i+6) {   
-                    horaIni = ponto[i+1].split(':');
-                    horaFin = ponto[i+4].split(':');
-                    segundosIni = (parseInt(horaIni[0])*3600)+(parseInt(horaIni[1])*60)
-                    segundosFin = (parseInt(horaFin[0])*3600)+(parseInt(horaFin[1])*60)          
-                    horas = parseInt(((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) / 3600)
-                    minutos = parseInt((((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) % 3600) / 60)
-                    segundosTotal = segundosTotal + (horas*3600)+(minutos*60)  
-                    console.log('Batida: ', batida + '->' + this.leftPad(horas, 2) + ':' + this.leftPad(minutos, 2))
-                    batida++
-                } 
-                HorasTrabalhadas = parseInt(segundosTotal / 3600)
-                MinutosTrabalhados = parseInt((segundosTotal % 3600) / 60)
-                console.log('Horas Total: ', this.leftPad(HorasTrabalhadas, 2) + ":" + this.leftPad(MinutosTrabalhados, 2))
-            }else{
-                console.log('Sem registro para esta data: ', dateFormat(this.refs.date.value, 'dd/mm/yyyy'))
-            }
+            console.log(res.data)
         })
-        this.setState({
-            isLoading: true
-        })
+    }
+    
+    leftPad(value, totalWidth, paddingChar){
+      var length = totalWidth - value.toString().length + 1;
+      return Array(length).join(paddingChar || '0') + value;
     }
     menu(){
         return(
