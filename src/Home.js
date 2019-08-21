@@ -36,7 +36,7 @@ class Home extends Component {
                 const ponto = res.data.split(';')
 
                 let batida = 1, horaIni, horaFin, segundosIni, segundosFin, horas, minutos, segundosTotal = 0
-                const posicao = 0
+                const p = []
                 for(let i = 0, j = 0; i < ponto.length-1; i=i+6, j++) {   
                     horaIni = ponto[i+1].split(':');
                     horaFin = ponto[i+4].split(':');
@@ -49,20 +49,28 @@ class Home extends Component {
 
                     segundosTotal = segundosTotal + (horas*3600)+(minutos*60)
 
-                    this.state.pontos[j] = {
+                    p[j] = {
+                        entrada: ponto[i+1],
+                        saida: ponto[i+4],
                         batida,
                         horas,
                         minutos
                     }
                     batida++
                 } 
-                this.state.HorasTrabalhadas = parseInt(segundosTotal / 3600)
-                this.state.MinutosTrabalhados = parseInt((segundosTotal % 3600) / 60) 
-                this.state.isLoading = false 
-                console.log(this.state.pontos)
+                this.setState({ 
+                    pontos: p,
+                    HorasTrabalhadas: parseInt(segundosTotal / 3600),
+                    MinutosTrabalhados: parseInt((segundosTotal % 3600) / 60),
+                    isLoading: false                   
+                })                
             }else{
-                console.log('vazio')
-                this.state.isLoading = true 
+                this.setState({ 
+                    pontos: [],
+                    HorasTrabalhadas: '00',
+                    MinutosTrabalhados: '00',
+                    isLoading: true                   
+                })  
             }
                     
         })
@@ -78,14 +86,14 @@ class Home extends Component {
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav mr-auto">
                   <li className="nav-item active">
-                    <a className="nav-link" href="#">Ponto<span className="sr-only">(current)</span></a>
+                    <a className="nav-link"><h5><span class="badge badge-secondary">Horas trabalhadas: {this.leftPad(this.state.HorasTrabalhadas, 2)}:{this.leftPad(this.state.MinutosTrabalhados, 2)} </span></h5></a>
                   </li>
                 </ul>
                 <div className="form-inline my-2 my-lg-0 form-group" >
-                  <label>Matrícula:</label>
-                  <input ref='matricula' className="form-control mr-sm-2" type="search" placeholder="Matrícula" aria-label="Search"/>
-                  <label>Data:</label>
-                  <input ref='data' className="form-control mr-sm-2" type="date" placeholder="Search" aria-label="Data" />
+                  <label>Matrícula: </label>
+                  <input ref='matricula' className="form-control mr-sm-2" type="search" placeholder="" aria-label="Search"/>
+                  <label>Data: </label>
+                  <input ref='data' className="form-control mr-sm-2" type="date" placeholder="" aria-label="Data" />
                   <button className="btn btn-outline-success my-2 my-sm-0" onClick={() => this.getPonto()}>Verificar</button>
                 </div>
               </div>
@@ -93,18 +101,15 @@ class Home extends Component {
         )
     }
     listPoint(value){
-        return(
-            <div className='row row-content'>                    
-                <div className="card  col-md-8 offset-md-2">
-                    <div className="card-header bg-transparent">{value.batida}</div>
-                    <div className="card-body">
-                        <div className="alert alert-primary" role="alert">
-                            <p className='font-weight-bold'>Entrada: 07:45  </p>
-                            <p className='font-weight-bold'>Saída: 12:00 </p>
-                            <p className='font-weight-bold'>Permanência: 03:15</p>
-                        </div>
+        return(                            
+            <div className="card  col-md-8 offset-md-2">
+                <div className="card-header bg-transparent">Batida {value.batida}</div>
+                <div className="card-body">
+                    <div className="alert alert-primary" role="alert">
+                        <p className='font-weight-bold'>Entrada: {value.entrada}  </p>
+                        <p className='font-weight-bold'>Saída: {value.saida} </p>
+                        <p className='font-weight-bold'>Permanência: {this.leftPad(value.horas, 2)}:{this.leftPad(value.minutos, 2)}</p>
                     </div>
-                    <div className="card-footer bg-transparent font-weight-bold">Horas trabalhadas: 09:27</div>
                 </div>
             </div>
         )
@@ -113,10 +118,10 @@ class Home extends Component {
     render() {
         return(
             <>                
-                {this.menu()}               
-                {   
-                    this.state.pontos.map(this.listPoint)
-                }
+                {this.menu()}    
+                <div className='row row-content'>        
+                { !this.state.isLoading && this.state.pontos.map(this.listPoint)}
+                </div>
             </>
         )
     }
