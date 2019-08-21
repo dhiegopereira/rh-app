@@ -12,18 +12,13 @@ class Home extends Component {
         this.state = {
             isLoading: false,
             pontos: [],
-            HorasTrabalhadas: 0,
-            MinutosTrabalhados: 0
+            HorasTotal: 0,
         }   
         this.menu = this.menu.bind(this)
         this.listPoint = this.listPoint.bind(this)
     }  
     componentDidMount(){
         this.getPonto()
-    }
-    leftPad(value, totalWidth, paddingChar){
-        var length = totalWidth - value.toString().length + 1;
-        return Array(length).join(paddingChar || '0') + value;
     } 
     date(str){ 
         return str.split("-").reduce(function(p, c){ return c + "/" +p })
@@ -31,54 +26,20 @@ class Home extends Component {
     getPonto(){
         const ponto = {
             'matricula': this.refs.matricula.value,
-	        'data': this.date(this.refs.data.value)
+            'dataIni': this.date(this.refs.data.value),
+            'dataFim': this.date(this.refs.data.value)
         }
         api.getPonto(ponto).then((res) => {
-            console.log(res.data)
-            if(res.data !== ''){
-                const ponto = res.data.split(';')
-
-                let batida = 1, horaIni, horaFin, segundosIni, segundosFin, horas, minutos, segundosTotal = 0
-                const p = []
-                for(let i = 0, j = 0; i < ponto.length-1; i=i+6, j++) {
-                     
-                    horaIni = ponto[i+1].split(':')
-                    try{
-                        horaFin = ponto[i+4].split(':')
-                        console.log('try')
-                    }catch{
-                        const aux = dateFormat(new Date(), 'HH:MM')
-                        horaFin = aux.split(':')
-                    }
-
-                    segundosIni = (parseInt(horaIni[0] == "00"?"24":horaIni[0])*3600)+(parseInt(horaIni[1])*60)
-                    segundosFin = (parseInt(horaFin[0] == "00"?"24":horaFin[0])*3600)+(parseInt(horaFin[1])*60)
-                    
-                    horas = parseInt(((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) / 3600)
-                    minutos = parseInt((((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) % 3600) / 60)
-
-                    segundosTotal = segundosTotal + (horas*3600)+(minutos*60)
-
-                    p[j] = {
-                        entrada: ponto[i+1],
-                        saida: ponto[i+4],
-                        batida,
-                        horas,
-                        minutos
-                    }
-                    batida++
-                } 
+            if(res.data !== ''){               
                 this.setState({ 
-                    pontos: p,
-                    HorasTrabalhadas: parseInt(segundosTotal / 3600),
-                    MinutosTrabalhados: parseInt((segundosTotal % 3600) / 60),
+                    pontos: res.data.pontos,
+                    HorasTotal:res.data.HorasTotal,
                     isLoading: false                   
                 })                
             }else{
                 this.setState({ 
                     pontos: [],
-                    HorasTrabalhadas: '00',
-                    MinutosTrabalhados: '00',
+                    HorasTrabalhadas: '00:00',
                     isLoading: true                   
                 })  
             }
@@ -96,7 +57,7 @@ class Home extends Component {
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav mr-auto">
                   <li className="nav-item active">
-                    <a className="nav-link"><h5><span class="badge badge-secondary">Horas trabalhadas: {this.leftPad(this.state.HorasTrabalhadas, 2)}:{this.leftPad(this.state.MinutosTrabalhados, 2)} </span></h5></a>
+                    <a className="nav-link"><h5><span class="badge badge-secondary">Horas trabalhadas: {this.state.HorasTotal} </span></h5></a>
                   </li>
                 </ul>
                 <div className="form-inline my-2 my-lg-0 form-group" >
@@ -116,9 +77,10 @@ class Home extends Component {
                 <div className="card-header bg-transparent">Batida {value.batida}</div>
                 <div className="card-body">
                     <div className="alert alert-primary" role="alert">
-                        <p className='font-weight-bold'>Entrada: {value.entrada}  </p>
-                        <p className='font-weight-bold'>Saída: {value.saida} </p>
-                        <p className='font-weight-bold'>Permanência: {this.leftPad(value.horas, 2)}:{this.leftPad(value.minutos, 2)}</p>
+                        <p className='font-weight-bold'>Data: {value.data}</p>
+                        <p className='font-weight-bold'>Entrada: {value.entrada}</p>
+                        <p className='font-weight-bold'>Saída: {value.saida}</p>
+                        <p className='font-weight-bold'>Permanência: {value.permanencia}</p>
                     </div>
                 </div>
             </div>
