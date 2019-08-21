@@ -32,17 +32,25 @@ class Home extends Component {
         }
         console.log(ponto)
         api.getPonto(ponto).then((res) => {
+            console.log(res.data)
             if(res.data !== ''){
                 const ponto = res.data.split(';')
 
                 let batida = 1, horaIni, horaFin, segundosIni, segundosFin, horas, minutos, segundosTotal = 0
                 const p = []
-                for(let i = 0, j = 0; i < ponto.length-1; i=i+6, j++) {   
-                    horaIni = ponto[i+1].split(':');
-                    horaFin = ponto[i+4].split(':');
+                for(let i = 0, j = 0; i < ponto.length-1; i=i+6, j++) {
+                     
+                    horaIni = ponto[i+1].split(':')
+                    try{
+                        horaFin = ponto[i+4].split(':')
+                        console.log('try')
+                    }catch{
+                        const aux = dateFormat(new Date(), 'HH:MM')
+                        horaFin = aux.split(':')
+                    }
 
-                    segundosIni = (parseInt(horaIni[0])*3600)+(parseInt(horaIni[1])*60)
-                    segundosFin = (parseInt(horaFin[0])*3600)+(parseInt(horaFin[1])*60)
+                    segundosIni = (parseInt(horaIni[0] == "00"?"24":horaIni[0])*3600)+(parseInt(horaIni[1])*60)
+                    segundosFin = (parseInt(horaFin[0] == "00"?"24":horaFin[0])*3600)+(parseInt(horaFin[1])*60)
                     
                     horas = parseInt(((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) / 3600)
                     minutos = parseInt((((segundosIni > segundosFin) ? segundosIni - segundosFin : segundosFin - segundosIni) % 3600) / 60)
