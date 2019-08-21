@@ -25,12 +25,14 @@ class Home extends Component {
         var length = totalWidth - value.toString().length + 1;
         return Array(length).join(paddingChar || '0') + value;
     } 
+    date(str){ 
+        return str.split("-").reduce(function(p, c){ return c + "/" +p })
+    }
     getPonto(){
         const ponto = {
             'matricula': this.refs.matricula.value,
-	        'data': dateFormat(this.refs.data.value, 'dd/mm/yyyy')
+	        'data': this.date(this.refs.data.value)
         }
-        console.log(ponto)
         api.getPonto(ponto).then((res) => {
             console.log(res.data)
             if(res.data !== ''){
