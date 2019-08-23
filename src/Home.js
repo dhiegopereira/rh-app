@@ -50,24 +50,7 @@ class Home extends Component {
         return(
             <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
               <a className="navbar-brand" href="#"><img src='images/logo.png' width='200' /></a>
-              <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-              </button>
-            
-              <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul className="navbar-nav mr-auto">
-                  <li className="nav-item active">
-                    <a className="nav-link"><h5><span class="badge badge-secondary">Horas trabalhadas: {this.state.HorasTotal} </span></h5></a>
-                  </li>
-                </ul>
-                <div className="form-inline my-2 my-lg-0 form-group" >
-                  <label>Matrícula: </label>
-                  <input ref='matricula' className="form-control mr-sm-2" type="search" placeholder="" aria-label="Search"/>
-                  <label>Data: </label>
-                  <input ref='data' className="form-control mr-sm-2" type="date" placeholder="" aria-label="Data" />
-                  <button className="btn btn-outline-success my-2 my-sm-0" onClick={() => this.getPonto()}>Verificar</button>
-                </div>
-              </div>
+              <a className="nav-link"><h5><span class="badge badge-secondary">Horas trabalhadas: {this.state.HorasTotal} </span></h5></a>
             </nav>
         )
     }
@@ -91,8 +74,16 @@ class Home extends Component {
         return(
             <>                
                 {this.menu()}    
-                <div className='row row-content'>        
-                { !this.state.isLoading && this.state.pontos.map(this.listPoint)}
+                <div className='row row-content'>                            
+                        <div className="col-md-12 form-point" >
+                            <label>Matrícula: </label>
+                            <input ref='matricula' className="form-control mr-sm-2" type="search" placeholder="" aria-label="Search"/>
+                            <label>Data: </label>
+                            <input ref='data' className="form-control mr-sm-2" type="date" placeholder="" aria-label="Data" />
+                            <button className="btn btn-outline-success my-2 my-sm-0" onClick={() => this.getPonto()}>Verificar</button>
+                        </div>
+                          
+                    { !this.state.isLoading && this.state.pontos.map(this.listPoint)}
                 </div>
             </>
         )
