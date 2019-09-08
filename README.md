@@ -1,24 +1,21 @@
-### Avaliação Técnica - Fullstack Javascript - ReactJs
+### Rh-App
 
-#### API
-1. Para dar início ao APP, primeiro deve ser realizado os seguintes passos:
-   Acesse: https://github.com/dhiegopereira/js-fullstack-challenge-api
-2. Caso já tenha feito os passos do tutorial acima, continue os passos abaixo.
-
-#### Clonar API no github
-1. Abra o terminal ou sua ferramenta de versionamento favorita
-2. No terminal, execute o comando a baixo:
-   git clone https://github.com/dhiegopereira/js-fullstack-challenge.git
-3. Caso for usar outra ferramenta de versionamento, utilize a URL acima do repositório
-2. Ao termina, navegue para dentro da pasta com o seguinte comando:
-   cd js-fullstack-challenge
+#### Clone repository
+1. Open the terminal or your favorite versioning tool.
+2. In the terminal navigate to the directory you want to put the project and execute the command below:
+    `$ git clone https://github.com/dhiegopereira/rh-app.git`
+3. If using another versioning tool, use the URL above the repository to clone
+2. When finished, navigate into the directory with the following command:
+    `$ cd rh-app`
 
 #### Instalação dos módulos do nodejs
-1. yarn install ou npm install
-2. yarn start ou npm start
-5. Copie endereçoe "http://127.0.0.1:3000/" e cole no navegador
+1. Next we will install the ** modules ** of our project, execute the following command in temrinal:
+    `$ npm install`
 
-#### Testando aplicação 
-1. Usuário: administrador@zallpy.com, senha: 12345
-2. Usuário: programador1@zallpy.com, senha: 12345
-3. Usuário: programador2@zallpy.com, senha: 12345
+#### Initializing the project, creating the tables and populating the data in the database for testing. 
+1. Finally, initialize our project. 
+    `$ npm start`
+2. To test, copy and paste into browser url `<link>`:<http://127.0.0.1:3000/>
+
+#### Jobify - Your Purpose
+Project created to follow up the points beats within the company
