@@ -1,7 +1,4 @@
 import React, { Component } from 'react'
-import convert from 'xml-js'
-import dateFormat from 'dateformat'
-import axios from 'axios'
 
 import api from './Api'
 
@@ -23,17 +20,33 @@ class Home extends Component {
     date(str){ 
         return str.split("-").reduce(function(p, c){ return c + "/" +p })
     }
+    dateFormat(){
+        const data = new Date(),
+              dia  = data.getDate().toString(),
+              diaF = (dia.length == 1) ? '0'+dia : dia,
+              mes  = (data.getMonth()+1).toString(), //+1 pois no getMonth Janeiro começa com zero.
+              mesF = (mes.length == 1) ? '0'+mes : mes,
+              anoF = data.getFullYear();
+        return diaF+"/"+mesF+"/"+anoF;
+    }
     getPonto(){
-        const ponto = {
-            'matricula': this.refs.matricula.value,
+        /*const ponto = {
+            'matricula': this.refs.matricula.value == ''? '013915052' : this.refs.matricula.value,
             'dataIni': this.date(this.refs.data.value),
             'dataFim': this.date(this.refs.data.value)
-        }
+        }*/ 
+        const ponto = {
+            'matricula': this.refs.matricula.value == ''? '013915052' : this.refs.matricula.value,
+            'dataIni': this.refs.data.value == ''? this.dateFormat() : this.date(this.refs.data.value),
+            'dataFim': this.refs.data.value == ''? this.dateFormat() : this.date(this.refs.data.value)
+        }     
+        console.log(ponto)   
         api.getPonto(ponto).then((res) => {
-            if(res.data !== ''){               
+            if(res.data !== ''){   
+                           
                 this.setState({ 
                     pontos: res.data.pontos,
-                    HorasTotal:res.data.HorasTotal,
+                    HorasTotal: res.data.HorasTotal,
                     isLoading: false                   
                 })                
             }else{
@@ -45,12 +58,12 @@ class Home extends Component {
             }
                     
         })
-    }
+    }    
     menu(){
         return(
             <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
               <a className="navbar-brand" href="#"><img src='images/logo.png' width='200' /></a>
-              <a className="nav-link"><h5><span class="badge badge-secondary">Horas trabalhadas: {this.state.HorasTotal} </span></h5></a>
+              <a className="nav-link"><h5><span className="badge badge-secondary">Horas trabalhadas: {this.state.HorasTotal} </span></h5></a>
             </nav>
         )
     }
@@ -68,8 +81,7 @@ class Home extends Component {
                 </div>
             </div>
         )
-    }
-    
+    }    
     render() {
         return(
             <>                
